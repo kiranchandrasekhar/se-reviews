@@ -1,0 +1,13 @@
+*.o
+!test-ae.o
+se
+test-se
+csim
+test-csim
+test-ae
+*.txt
+*.out
+*.log
+.vscode/*
+node_modules/
+*.json
