@@ -208,10 +208,10 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
             res = alu_vala << (alu_valb & 0x3FUL);
             break;
         case LSR_OP:
-            res = alu_vala >>L (alu_valb & 0x3FUL);
+            res = alu_vala >> (alu_valb & 0x3FUL);
             break;
         case ASR_OP:
-            res = alu_vala >>A (alu_valb & 0x3FUL);
+            res = alu_vala >> (alu_valb & 0x3FUL);
             break;
         case PASS_A_OP:
             res = alu_vala;
