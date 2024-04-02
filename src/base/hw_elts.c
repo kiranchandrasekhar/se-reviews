@@ -35,9 +35,14 @@ imem(uint64_t imem_addr,
  */
 comb_logic_t
 regfile(uint8_t src1, uint8_t src2, uint8_t dst, uint64_t val_w,
-        // bool src1_31isSP, bool src2_31isSP, bool dst_31isSP, 
-        bool w_enable,
-        uint64_t *val_a, uint64_t *val_b) {
+    // bool src1_31isSP, bool src2_31isSP, bool dst_31isSP, 
+    bool w_enable,
+    uint64_t *val_a, uint64_t *val_b) {
+        *val_a = guest.proc->GPR[src1];
+        *val_b = guest.proc->GPR[src2];
+        if (w_enable){
+            guest.proc->GPR[dst] = val_w;
+        }
 }
 
 /*
@@ -47,6 +52,110 @@ regfile(uint8_t src1, uint8_t src2, uint8_t dst, uint64_t val_w,
  */
 static bool 
 cond_holds(cond_t cond, uint8_t ccval) {
+    ccval = ccval >> 4;
+    switch (cond){
+        case C_EQ:
+            if (GET_ZF(ccval) == 1){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_NE:
+            if (GET_ZF(ccval) == 0){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_CS:
+            if (GET_CF(ccval) == 1){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_CC:
+            if (GET_CF(ccval) == 0){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_MI:
+            if (GET_NF(ccval) == 1){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_PL:
+            if (GET_NF(ccval) == 0){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_VS:
+            if (GET_VF(ccval) == 1){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_VC:
+            if (GET_VF(ccval) == 0){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_HI:
+            if ( (GET_CF(ccval) == 1) && (GET_ZF(ccval) == 0)){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_LS:
+            if (!((GET_CF(ccval) == 1) && (GET_ZF(ccval) == 0))){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_GE:
+            if (GET_NF(ccval) == GET_VF(ccval)){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_LT:
+            if (GET_NF(ccval) != GET_VF(ccval)){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_GT:
+            if ((GET_ZF(ccval) == 0) && (GET_NF(ccval) == GET_VF(ccval))){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        case C_LE:
+            if (!((GET_ZF(ccval) == 0) && (GET_NF(ccval) == GET_VF(ccval)))){
+                return true;
+                break;
+            }
+            return false;
+            break;
+        default:
+            return true;
+            break;
+    }
     return false;
 }
 
