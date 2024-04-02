@@ -171,6 +171,70 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
     uint64_t *val_e, bool *cond_val, uint8_t *nzcv) {
     uint64_t res = 0xFEEDFACEDEADBEEF;  // To make it easier to detect errors.
 
+    uint8_t n = 0;
+    uint8_t c = 0;
+    uint8_t z = 0;
+    uint8_t v = 0;
+
+    switch(ALUop){
+        case PLUS_OP:
+            res = alu_vala + (alu_valb << alu_valhw);
+            if (res < alu_vala || res < alu_valb){
+                c = 1;
+            }
+            break;
+        case MINUS_OP:
+            res = alu_vala - (alu_valb << alu_valhw);
+            if (res > alu_vala || res > alu_valb){
+                c = 1;
+            }
+            break;
+        case INV_OP:
+            res = alu_vala | (~alu_valb);
+            break;
+        case OR_OP:
+            res = alu_vala | alu_valb;
+            break;
+        case EOR_OP:
+            res = alu_vala ^ alu_valb;
+            break;
+        case AND_OP:
+            res = alu_vala & alu_valb;
+            break;
+        case MOV_OP:
+            res = alu_vala | (alu_valb << alu_valhw);
+            break;
+        case LSL_OP:
+            res = alu_vala << (alu_valb & 0x3FUL);
+            break;
+        case LSR_OP:
+            res = alu_vala >>L (alu_valb & 0x3FUL);
+            break;
+        case ASR_OP:
+            res = alu_vala >>A (alu_valb & 0x3FUL);
+            break;
+        case PASS_A_OP:
+            res = alu_vala;
+            break;
+        default:
+            break;
+    }
+    uint64_t vala_msb = (alu_vala >> 63) && 0x1;
+    uint64_t valb_msb = (alu_valb >> 63) && 0x1;
+    uint64_t res_msb = (res >> 63) && 0x1;
+    if ((vala_msb == 0 && valb_msb == 0 && res_msb == 1) || (vala_msb == 1 && valb_msb == 1 && res_msb == 0)){
+         v = 1;
+    }
+    if (res == 0){
+        z = 1;
+    }if (res < 0){
+        n = 1;
+    }
+    if (set_CC){
+        *nzcv = PACK_CC(n, z, c, v);
+    }
+    *cond_val = cond_holds(cond, PACK_CC(n,z,c,v));
+    *val_e = res;
 }
 
 comb_logic_t 
