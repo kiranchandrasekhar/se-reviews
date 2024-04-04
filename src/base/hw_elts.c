@@ -65,8 +65,9 @@ cond_holds(cond_t cond, uint8_t ccval) {
             if (GET_ZF(ccval) == 0){
                 return true;
                 break;
+            }else{
+                return false;
             }
-            return false;
             break;
         case C_CS:
             if (GET_CF(ccval) == 1){
@@ -176,17 +177,37 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
     uint8_t z = 0;
     uint8_t v = 0;
 
+    uint64_t vala_msb;
+    uint64_t valb_msb;
+    uint64_t res_msb;
+
+    bool is_nop = false;
+
     switch(ALUop){
         case PLUS_OP:
             res = alu_vala + (alu_valb << alu_valhw);
             if (res < alu_vala || res < alu_valb){
                 c = 1;
             }
+            valb_msb = (alu_valb >> 63) && 0x1;
+            vala_msb = (alu_vala >> 63) && 0x1;
+            res_msb = (res >> 63) && 0x1;
+            if ((vala_msb == 0 && valb_msb == 0 && res_msb == 1) || (vala_msb == 1 && valb_msb == 1 && res_msb == 0)){
+                v = 1;
+            }
             break;
         case MINUS_OP:
             res = alu_vala - (alu_valb << alu_valhw);
-            if (res > alu_vala || res > alu_valb){
+            vala_msb = (alu_vala >> 63) && 0x1;
+            res_msb = (res >> 63) && 0x1;
+            if (alu_vala >= alu_valb){
                 c = 1;
+            }else{
+                c = 0;
+            }
+            valb_msb = (alu_valb >> 63) && 0x1;
+            if ((vala_msb == 0 && valb_msb == 1 && res_msb == 0 ) || (vala_msb == 1 && valb_msb == 0 && res_msb == 1)){
+                v = 1;
             }
             break;
         case INV_OP:
@@ -215,20 +236,23 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
             break;
         case PASS_A_OP:
             res = alu_vala;
+            is_nop = true;
             break;
         default:
             break;
     }
-    uint64_t vala_msb = (alu_vala >> 63) && 0x1;
-    uint64_t valb_msb = (alu_valb >> 63) && 0x1;
-    uint64_t res_msb = (res >> 63) && 0x1;
-    if ((vala_msb == 0 && valb_msb == 0 && res_msb == 1) || (vala_msb == 1 && valb_msb == 1 && res_msb == 0)){
-         v = 1;
-    }
-    if (res == 0){
-        z = 1;
-    }if (res < 0){
-        n = 1;
+    // valb_msb = (alu_valb >> 63) && 0x1;
+    // vala_msb = (alu_vala >> 63) && 0x1;
+    // res_msb = (res >> 63) && 0x1;
+    // if ((vala_msb == 0 && valb_msb == 1 && res_msb == 0 ) || (vala_msb == 1 && valb_msb == 0 && res_msb == 1)){
+    //      v = 1;
+    // }
+    if (!is_nop){
+        if (res == 0){
+            z = 1;
+        }if (res_msb == 1){
+            n = 1;
+        }
     }
     if (set_CC){
         *nzcv = PACK_CC(n, z, c, v);
