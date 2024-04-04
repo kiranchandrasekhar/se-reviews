@@ -52,7 +52,7 @@ regfile(uint8_t src1, uint8_t src2, uint8_t dst, uint64_t val_w,
  */
 static bool 
 cond_holds(cond_t cond, uint8_t ccval) {
-    ccval = ccval >> 4;
+    //ccval = ccval >> 4;
     switch (cond){
         case C_EQ:
             if (GET_ZF(ccval) == 1){
@@ -65,9 +65,8 @@ cond_holds(cond_t cond, uint8_t ccval) {
             if (GET_ZF(ccval) == 0){
                 return true;
                 break;
-            }else{
-                return false;
             }
+            return false;
             break;
         case C_CS:
             if (GET_CF(ccval) == 1){
@@ -181,8 +180,6 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
     uint64_t valb_msb;
     uint64_t res_msb;
 
-    bool is_nop = false;
-
     switch(ALUop){
         case PLUS_OP:
             res = alu_vala + (alu_valb << alu_valhw);
@@ -236,7 +233,6 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
             break;
         case PASS_A_OP:
             res = alu_vala;
-            is_nop = true;
             break;
         default:
             break;
@@ -247,17 +243,15 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
     // if ((vala_msb == 0 && valb_msb == 1 && res_msb == 0 ) || (vala_msb == 1 && valb_msb == 0 && res_msb == 1)){
     //      v = 1;
     // }
-    if (!is_nop){
-        if (res == 0){
-            z = 1;
-        }if (res_msb == 1){
-            n = 1;
-        }
+    if (res == 0){
+        z = 1;
+    }if (res_msb == 1){
+        n = 1;
     }
     if (set_CC){
         *nzcv = PACK_CC(n, z, c, v);
     }
-    *cond_val = cond_holds(cond, PACK_CC(n,z,c,v));
+    *cond_val = cond_holds(cond, *nzcv);
     *val_e = res;
 }
 
