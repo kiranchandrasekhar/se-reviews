@@ -41,8 +41,17 @@ select_PC(uint64_t pred_PC,                                       // The predict
         *current_PC = 0; // PC can't be 0 normally.
         return;
     }
-    // Modify starting here.
-    return;
+    if (M_opcode == OP_B_COND && M_cond_val) {
+        *current_PC = seq_succ; // This should be the correct sequential successor address
+        return;
+    }
+
+    if (D_opcode == OP_RET) {
+        *current_PC = val_a; // The return address is in val_a
+        return;
+    }
+
+    *current_PC = pred_PC;
 }
 
 /*
@@ -63,8 +72,23 @@ predict_PC(uint64_t current_PC, uint32_t insnbits, opcode_t op,
     if (!current_PC) {
         return; // We use this to generate a halt instruction.
     }
-    // Modify starting here.
-    return;
+    *seq_succ = current_PC + 4;
+    int64_t offset = 0;
+    switch (op) {
+        case OP_B:
+        case OP_BL:
+            offset = bitfield_s64(insnbits, 0, 26);
+            *predicted_PC = current_PC + offset;
+            break;
+        case OP_B_COND:
+            offset = bitfield_s64(insnbits, 5, 19);
+            *predicted_PC = current_PC + offset;
+            break;
+                
+        default:
+            *predicted_PC = *seq_succ;
+            break;
+    }
 }
 
 /*
@@ -77,7 +101,31 @@ predict_PC(uint64_t current_PC, uint32_t insnbits, opcode_t op,
 
 static
 void fix_instr_aliases(uint32_t insnbits, opcode_t *op) {
-    return;
+    unsigned sf = (insnbits >> 31) & 1;
+    unsigned immr = (insnbits >> 16) & 0x3F;
+    unsigned imms = (insnbits >> 10) & 0x3F;
+    unsigned Rd = insnbits & 0x1F;
+    unsigned N = (insnbits >> 22) & 1;
+    
+    // ChArm-v2 only uses x registers 
+    if (sf == 1) {
+        if (*op == OP_UBFM) {
+            if (N == 1) {
+                unsigned shift_amount = 63 - imms;
+                if (imms != 0b111111 && ((imms + 1) & 0x3F) == immr) {
+                    *op = OP_LSL;
+                } else if (imms == 0b111111 && ((shift_amount & 0x3F) == immr)) {
+                    *op = OP_LSR;
+                }
+            }
+        }
+        else if (*op == OP_SUBS_RR && Rd == 0b11111) {
+            *op = OP_CMP_RR;
+        }
+        else if (*op == OP_ANDS_RR && Rd == 0b11111) {
+            *op = OP_TST_RR;
+        }
+    }
 }
 
 /*
@@ -111,7 +159,34 @@ comb_logic_t fetch_instr(f_instr_impl_t *in, d_instr_impl_t *out) {
         imem_err = false;
     }
     else {
-        // Students modify from here
+        // fetch the instruction bits for the current PC from the instruction memory
+        uint32_t insnbits;
+        bool imem_err;
+        imem(current_PC, &insnbits, &imem_err);
+        if (!imem_err) {
+            const uint32_t OPCODE_MASK = 0b11;  
+            const uint32_t OPCODE_SHIFT = 29;  
+            opcode_t opcode = (insnbits >> OPCODE_SHIFT) & OPCODE_MASK;
+
+            fix_instr_aliases(insnbits, &opcode);
+
+            uint64_t predicted_PC;
+            uint64_t seq_succ;
+            predict_PC(current_PC, insnbits, opcode, &predicted_PC, &seq_succ);
+
+            // update the output pipeline register with the fetched instruction
+            out->insnbits = insnbits;
+            out->op = opcode;  
+            out->print_op = opcode;  
+            out->this_PC = current_PC;  
+            out->seq_succ_PC = seq_succ;  
+            out->status = STAT_AOK;
+            in->pred_PC = predicted_PC;  
+        } else {
+            out->status = STAT_INS;  
+            out->op = OP_ERROR;      
+            out->print_op = OP_ERROR;
+        }
     }
 
     if (imem_err || out->op == OP_ERROR) {

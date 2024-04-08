@@ -49,7 +49,35 @@ generate_DXMW_control(opcode_t op,
 
 static comb_logic_t 
 extract_immval(uint32_t insnbits, opcode_t op, int64_t *imm) {
-    return;
+    *imm = 0;  
+
+    switch (op) {
+        case OP_STUR:
+        case OP_LDUR:
+            *imm = bitfield_u64(insnbits, 12, 9);
+            break;
+        case OP_MOVK:
+        case OP_MOVZ:
+            *imm = bitfield_u32(insnbits, 5, 16);
+            break;
+        case OP_B_COND:
+        case OP_ADRP:
+            *imm = bitfield_u64(insnbits, 5, 19);
+            break;
+        case OP_ADD_RI:
+        case OP_SUB_RI:
+        case OP_LSL:
+        case OP_LSR:
+        case OP_ASR:
+            *imm = bitfield_u32(insnbits, 10, 12);
+            break;
+        case OP_B:
+        case OP_BL:
+            *imm = bitfield_u64(insnbits, 0, 26);
+            break;
+        default:
+            break;
+    }
 }
 
 /*
@@ -72,12 +100,15 @@ decide_alu_op(opcode_t op, alu_op_t *ALU_op) {
 
 comb_logic_t 
 copy_m_ctl_sigs(m_ctl_sigs_t *dest, m_ctl_sigs_t *src) {
-    return;
+    dest->dmem_read = src->dmem_read;
+    dest->dmem_write = src->dmem_write;
 }
 
 comb_logic_t 
 copy_w_ctl_sigs(w_ctl_sigs_t *dest, w_ctl_sigs_t *src) {
-    return;
+    dest->dst_sel = src->dst_sel;
+    dest->wval_sel = src->wval_sel;
+    dest->w_enable = src->w_enable;
 }
 
 comb_logic_t
