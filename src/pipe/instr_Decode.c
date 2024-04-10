@@ -80,7 +80,7 @@ extract_immval(uint32_t insnbits, opcode_t op, int64_t *imm) {
     switch (op) {
         case OP_STUR:
         case OP_LDUR:
-            *imm = bitfield_u64(insnbits, 12, 9);
+            *imm = bitfield_s64(insnbits, 12, 9);
             break;
         case OP_MOVK:
         case OP_MOVZ:
@@ -88,7 +88,7 @@ extract_immval(uint32_t insnbits, opcode_t op, int64_t *imm) {
             break;
         case OP_B_COND:
         case OP_ADRP:
-            *imm = bitfield_u64(insnbits, 5, 19);
+            *imm = bitfield_s64(insnbits, 5, 19);
             break;
         case OP_ADD_RI:
         case OP_SUB_RI:
@@ -99,7 +99,7 @@ extract_immval(uint32_t insnbits, opcode_t op, int64_t *imm) {
             break;
         case OP_B:
         case OP_BL:
-            *imm = bitfield_u64(insnbits, 0, 26);
+            *imm = bitfield_s64(insnbits, 0, 26);
             break;
         default:
             break;
