@@ -15,7 +15,6 @@
 #include "instr_pipeline.h"
 #include "machine.h"
 #include "hw_elts.h"
-#include "instr_Decode.c"
 
 extern machine_t guest;
 extern mem_status_t dmem_status;
@@ -36,16 +35,10 @@ extern comb_logic_t copy_w_ctl_sigs(w_ctl_sigs_t *, w_ctl_sigs_t *);
  */
 
 comb_logic_t execute_instr(x_instr_impl_t *in, m_instr_impl_t *out) {
-
-    uint8_t nzcv = 0;
-
-    //calling generate from decode - is this enough? updates x_sigs to be correct for call to alu
-    d_ctl_sigs_t local_D_sigs;
-    generate_DXMW_control(in->op, &local_D_sigs, &in->X_sigs, &in->M_sigs, &in->W_sigs);
     
     uint64_t aluOperandB = in->X_sigs.valb_sel ? in->val_b : in->val_imm; 
     bool *condVal;
-    alu(in->val_a, aluOperandB, in->val_hw, in->ALU_op, in->X_sigs.set_CC, in->cond, out->val_ex, &condVal, &nzcv);
+    alu(in->val_a, aluOperandB, in->val_hw, in->ALU_op, in->X_sigs.set_CC, in->cond, &out->val_ex, condVal, &guest.proc->NZCV);
 
     // Copy control signals for the next pipeline stages.
     copy_m_ctl_sigs(&out->M_sigs, &in->M_sigs);
@@ -57,6 +50,7 @@ comb_logic_t execute_instr(x_instr_impl_t *in, m_instr_impl_t *out) {
     out->status = in->status;
     out->seq_succ_PC = in->seq_succ_PC;
     out->dst = in->dst;
+    out->cond_holds = condVal;
     
     return;
 }

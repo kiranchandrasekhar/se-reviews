@@ -32,5 +32,15 @@ extern int64_t W_wval;
  */
 
 comb_logic_t wback_instr(w_instr_impl_t *in) {
+ if (in->W_sigs.w_enable) {
+        uint64_t valueToWrite = in->W_sigs.wval_sel ? in->val_mem : in->val_ex;
+        //where do u write to
+        in->val_b = valueToWrite;
+        if (in->W_sigs.dst_sel){
+            W_wval = 30;
+        }else{
+            W_wval = in->dst;
+        }
+    }
     return;
 }

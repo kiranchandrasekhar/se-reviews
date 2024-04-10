@@ -35,7 +35,7 @@ extern comb_logic_t copy_w_ctl_sigs(w_ctl_sigs_t *, w_ctl_sigs_t *);
 
 comb_logic_t memory_instr(m_instr_impl_t *in, w_instr_impl_t *out) {
     
-    bool memError = false;
+    bool *memError;
 
     copy_w_ctl_sigs(&out->W_sigs, &in->W_sigs);
     if (in->M_sigs.dmem_read) {
@@ -46,8 +46,12 @@ comb_logic_t memory_instr(m_instr_impl_t *in, w_instr_impl_t *out) {
     }
 
     //check for memory errors and update status 
-    out->status = // error handling
-    out->val_mem = //?
+    if (memError && (in->op == OP_LDUR || in->op == OP_STUR)){
+        dmem_status = ERROR;
+        out->status = STAT_ADR;
+    } else{
+        out->status = in->status;
+    }
 
     out->op = in->op;
     out->print_op = in->print_op;
@@ -56,6 +60,7 @@ comb_logic_t memory_instr(m_instr_impl_t *in, w_instr_impl_t *out) {
     out->val_ex = in->val_ex;
     out->val_b = in->val_b;
     
+
 
     return;
 }
