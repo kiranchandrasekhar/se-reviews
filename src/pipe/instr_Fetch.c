@@ -119,11 +119,11 @@ void fix_instr_aliases(uint32_t insnbits, opcode_t *op) {
                 }
             }
         }
-        else if (*op == OP_SUBS_RR && Rd == 0b11111) {
-            *op = OP_CMP_RR;
+        else if (*op == OP_CMP_RR && Rd == 0b11111) {
+            *op = OP_SUBS_RR;
         }
-        else if (*op == OP_ANDS_RR && Rd == 0b11111) {
-            *op = OP_TST_RR;
+        else if (*op == OP_TST_RR && Rd == 0b11111) {
+            *op = OP_ANDS_RR;
         }
     }
 }
