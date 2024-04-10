@@ -41,7 +41,7 @@ select_PC(uint64_t pred_PC,                                       // The predict
         *current_PC = 0; // PC can't be 0 normally.
         return;
     }
-    if (M_opcode == OP_B_COND && M_cond_val) {
+    if (M_opcode == OP_B_COND && (M_cond_val == false)) {
         *current_PC = seq_succ; // This should be the correct sequential successor address
         return;
     }
@@ -159,36 +159,24 @@ comb_logic_t fetch_instr(f_instr_impl_t *in, d_instr_impl_t *out) {
         imem_err = false;
     }
     else {
-        // fetch the instruction bits for the current PC from the instruction memory
-        uint32_t insnbits;
-        bool imem_err;
-        imem(current_PC, &insnbits, &imem_err);
-        if (!imem_err) {
-            const uint32_t OPCODE_MASK = 0b11;  
-            const uint32_t OPCODE_SHIFT = 29;  
-            opcode_t opcode = (insnbits >> OPCODE_SHIFT) & OPCODE_MASK;
-
-            fix_instr_aliases(insnbits, &opcode);
-
-            uint64_t predicted_PC;
-            uint64_t seq_succ;
-            predict_PC(current_PC, insnbits, opcode, &predicted_PC, &seq_succ);
-
-            // update the output pipeline register with the fetched instruction
-            out->insnbits = insnbits;
-            out->op = opcode;  
-            out->print_op = opcode;  
-            out->this_PC = current_PC;  
-            out->seq_succ_PC = seq_succ;  
-            out->status = STAT_AOK;
-            in->pred_PC = predicted_PC;  
-        } else {
-            out->status = STAT_INS;  
-            out->op = OP_ERROR;      
-            out->print_op = OP_ERROR;
+        imem(current_PC, &out->insnbits, &imem_err);
+        // if (!imem_err) { 
+        out->op = itable[(out->insnbits && 0xffe00000) >> 21];
+        out->print_op = out->op;   
+        fix_instr_aliases(out->insnbits, &out->op);
+        predict_PC(current_PC, out->insnbits, out->op, &in->pred_PC, &out->seq_succ_PC);
+        F_PC = in->pred_PC;
+        if (out->op == OP_ADRP){
+            out->adrp_val = (out->this_PC && 0xfffffffffffff000) + 
+            (bitfield_s64(out->insnbits, 5, 19) << 12);
         }
+        in->status = STAT_AOK;
+        // } else {
+        //     out->status = STAT_INS;  
+        //     out->op = OP_ERROR;      
+        //     out->print_op = OP_ERROR;
+        // }
     }
-
     if (imem_err || out->op == OP_ERROR) {
         in->status = STAT_INS;
         F_in->status = in->status;
