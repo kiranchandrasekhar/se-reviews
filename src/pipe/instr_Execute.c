@@ -15,11 +15,10 @@
 #include "instr_pipeline.h"
 #include "machine.h"
 #include "hw_elts.h"
+#include "instr_Decode.c"
 
 extern machine_t guest;
 extern mem_status_t dmem_status;
-
-extern bool X_condval;
 
 extern comb_logic_t copy_m_ctl_sigs(m_ctl_sigs_t *, m_ctl_sigs_t *);
 extern comb_logic_t copy_w_ctl_sigs(w_ctl_sigs_t *, w_ctl_sigs_t *);
@@ -41,11 +40,12 @@ comb_logic_t execute_instr(x_instr_impl_t *in, m_instr_impl_t *out) {
     uint8_t nzcv = 0;
 
     //calling generate from decode - is this enough? updates x_sigs to be correct for call to alu
-    //generate_DXMW_control(in->op, NULL, &in->X_sigs, &in->M_sigs, &in->W_sigs);
+    d_ctl_sigs_t local_D_sigs;
+    generate_DXMW_control(in->op, &local_D_sigs, &in->X_sigs, &in->M_sigs, &in->W_sigs);
     
     uint64_t aluOperandB = in->X_sigs.valb_sel ? in->val_b : in->val_imm; 
-
-    //alu(in->val_a, aluOperandB, in->val_hw, in->ALU_op, in->X_sigs.set_CC, in->cond, out->val_ex, X_condval, &nzcv);
+    bool *condVal;
+    alu(in->val_a, aluOperandB, in->val_hw, in->ALU_op, in->X_sigs.set_CC, in->cond, out->val_ex, &condVal, &nzcv);
 
     // Copy control signals for the next pipeline stages.
     copy_m_ctl_sigs(&out->M_sigs, &in->M_sigs);
