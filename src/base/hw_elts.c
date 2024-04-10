@@ -38,7 +38,11 @@ regfile(uint8_t src1, uint8_t src2, uint8_t dst, uint64_t val_w,
     // bool src1_31isSP, bool src2_31isSP, bool dst_31isSP, 
     bool w_enable,
     uint64_t *val_a, uint64_t *val_b) {
-        *val_a = guest.proc->GPR[src1];
+        if(src1 < 32){
+            *val_a = guest.proc->GPR[src1];
+        } else {
+            *val_a = 0;
+        }
         *val_b = guest.proc->GPR[src2];
         if (w_enable){
             guest.proc->GPR[dst] = val_w;
