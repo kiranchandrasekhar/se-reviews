@@ -50,17 +50,16 @@ generate_DXMW_control(opcode_t op,
     M_sigs->dmem_read = (op == OP_LDUR);
     M_sigs->dmem_write = (op == OP_STUR);
 
-    W_sigs->w_enable = (op == OP_LDUR) || (op == OP_MOVK) || (op == OP_MOVZ) ||
-                       (op == OP_ADD_RI) || (op == OP_SUB_RI) ||
-                       (op == OP_ADDS_RR) || (op == OP_SUBS_RR) || (op == OP_ANDS_RR);
+    W_sigs->w_enable = !((op == OP_STUR) || (op == OP_B) || (op == OP_B_COND) || (op == OP_RET)
+        || (op == OP_NOP) || (op == OP_HLT) || (op == OP_CMP_RR) || (op == OP_TST_RR));
 
     W_sigs->wval_sel = (op == OP_LDUR);
 
-    X_sigs->valb_sel = (op == OP_ADD_RI) || (op == OP_SUB_RI) || 
-                       (op == OP_ADDS_RR) || (op == OP_SUBS_RR) || (op == OP_ANDS_RR) ||
-                       (op == OP_LSL) || (op == OP_LSR) || (op == OP_ASR);
+    X_sigs->valb_sel = (op == OP_ADDS_RR) || (op == OP_ANDS_RR) || 
+                       (op==OP_SUBS_RR)|| (op == OP_CMP_RR) || (op == OP_TST_RR) || (op == OP_ORR_RR) ||
+                       (op == EOR_OP);
 
-    X_sigs->set_CC = (op == OP_ADDS_RR) || (op == OP_SUBS_RR) || (op == OP_ANDS_RR);
+    X_sigs->set_CC = (op == OP_ADDS_RR) || (op == OP_SUBS_RR) || (op == OP_ANDS_RR) || (op == OP_CMP_RR) || (op == OP_TST_RR);
 
     D_sigs->src2_sel = (op == OP_STUR);
 
@@ -217,16 +216,16 @@ extract_regs(uint32_t insnbits, opcode_t op,
     //left ops, interpret as stack pointer, and everything else is xzr
 
     if (!(op == OP_MOVZ || op == OP_NOP || op == OP_HLT)){
-        src1 = bitfield_u32(src1, 5, 5);
+        src1 = bitfield_u32(insnbits, 5, 5) && 0xff;
     }
     //added mvn which was not in old implementation
     if (op == OP_ADDS_RR || op == OP_SUBS_RR || op == OP_CMP_RR ||
         op == OP_ORR_RR || op == OP_EOR_RR || op == OP_ANDS_RR ||
         op == OP_TST_RR || op == OP_MVN){
-        src2 = bitfield_u32(src2, 16, 5);
+        src2 = bitfield_u32(insnbits, 16, 5) && 0xff;
     }
     if (op != OP_RET){
-        dst = bitfield_u32(dst, 0, 5);
+        dst = bitfield_u32(insnbits, 0, 5) && 0xff;
     }
     //error checking of registers being SP
     if (src1 == SP_NUM || src2 == SP_NUM || dst == SP_NUM){
@@ -303,9 +302,9 @@ comb_logic_t decode_instr(d_instr_impl_t *in, x_instr_impl_t *out) {
     out->M_sigs = local_M_sigs;
     out->W_sigs = local_W_sigs;
 
-    uint8_t src1, src2, dst;
+    uint8_t src1, src2, dst, val_w;
     extract_regs(in->insnbits, in->op, &src1, &src2, &dst);
-    regfile(src1, src2, W_out->dst, W_out->val_ex, W_out->W_sigs.w_enable, &out->val_a, &out->val_b);
+    regfile(src1, src2, out->dst, &val_w, out->W_sigs.w_enable, &out->val_a, &out->val_b);
     decide_alu_op(in->op, &out->ALU_op);
     extract_immval(in->insnbits, in->op, &out->val_imm);
 

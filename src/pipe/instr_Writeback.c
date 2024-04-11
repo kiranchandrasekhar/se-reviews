@@ -35,7 +35,7 @@ comb_logic_t wback_instr(w_instr_impl_t *in) {
     if (in->W_sigs.w_enable) {
         W_wval = in->W_sigs.wval_sel ? in->val_mem : in->val_ex;
         //set vals to 0 ?
-        //call regfile
+        //call regfile?
         if (in->W_sigs.dst_sel){
             in->dst = 30;
         }
