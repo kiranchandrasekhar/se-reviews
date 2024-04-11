@@ -218,38 +218,38 @@ extract_regs(uint32_t insnbits, opcode_t op,
     if (!(op == OP_MOVZ || op == OP_NOP || op == OP_HLT || 
           op == OP_MOVK || op == OP_ADRP || op == OP_RET ||
           op == OP_B_COND || op == OP_B || op == OP_BL)){
-        src1 = bitfield_u32(insnbits, 5, 5) && 0xff;
+        *src1 = bitfield_u32(insnbits, 5, 5);
     }
     // includes LDUR, STUR, 
     //added mvn which was not in old implementation
     if (op == OP_ADDS_RR || op == OP_SUBS_RR || op == OP_CMP_RR ||
         op == OP_ORR_RR || op == OP_EOR_RR || op == OP_ANDS_RR ||
         op == OP_TST_RR || op == OP_MVN){
-        src2 = bitfield_u32(insnbits, 16, 5) && 0xff;
+        *src2 = bitfield_u32(insnbits, 16, 5);
     }
     if (op != OP_RET){
-        dst = bitfield_u32(insnbits, 0, 5) && 0xff;
+        *dst = bitfield_u32(insnbits, 0, 5);
     }
     if (op == OP_RET){
-        dst = 30;
+        *dst = 30;
     }
     //error checking of registers being SP
-    if (src1 == SP_NUM || src2 == SP_NUM || dst == SP_NUM){
+    if (*src1 == SP_NUM || *src2 == SP_NUM || *dst == SP_NUM){
         if (!(op == OP_LDUR || op == OP_STUR || op == OP_ADD_RI || op == OP_SUB_RI)){
-            if (src1 == SP_NUM){
-                src1 = XZR_NUM;
+            if (*src1 == SP_NUM){
+                *src1 = XZR_NUM;
             }
-            if(src2 == SP_NUM){
-                src2 = XZR_NUM;
+            if(*src2 == SP_NUM){
+                *src2 = XZR_NUM;
             }
-            if(dst == SP_NUM){
-                dst = XZR_NUM;
+            if(*dst == SP_NUM){
+                *dst = XZR_NUM;
             }
         }
         if (op == OP_LDUR || op == OP_STUR){
-            if (src2 == SP_NUM || dst == SP_NUM){
-                src2 = XZR_NUM;
-                dst = XZR_NUM;
+            if (*src2 == SP_NUM || *dst == SP_NUM){
+                *src2 = XZR_NUM;
+                *dst = XZR_NUM;
             }
         }
         
@@ -321,10 +321,9 @@ comb_logic_t decode_instr(d_instr_impl_t *in, x_instr_impl_t *out) {
     dst = 0;
     //val_w = 0;
     extract_regs(in->insnbits, in->op, &src1, &src2, &dst);
-    regfile(src1, src2, W_out->dst, W_wval, out->W_sigs.w_enable, &out->val_a, &out->val_b);
+    regfile(src1, src2, W_out->dst, W_wval, W_out->W_sigs.w_enable, &out->val_a, &out->val_b);
     decide_alu_op(in->op, &out->ALU_op);
     extract_immval(in->insnbits, in->op, &out->val_imm);
-
     out->dst = dst;
     out->op = in->op;
     out->print_op = in->print_op; 
