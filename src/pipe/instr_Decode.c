@@ -230,9 +230,12 @@ extract_regs(uint32_t insnbits, opcode_t op,
     if (op != OP_RET){
         dst = bitfield_u32(insnbits, 0, 5) && 0xff;
     }
+    if (op == OP_RET){
+        dst = 30;
+    }
     //error checking of registers being SP
     if (src1 == SP_NUM || src2 == SP_NUM || dst == SP_NUM){
-        if (!(op == OP_LDUR || op == OP_STUR || op == OP_ADD_RI || op == OP_SUB_RI || op == OP_SUBS_RR)){
+        if (!(op == OP_LDUR || op == OP_STUR || op == OP_ADD_RI || op == OP_SUB_RI)){
             if (src1 == SP_NUM){
                 src1 = XZR_NUM;
             }
@@ -243,6 +246,13 @@ extract_regs(uint32_t insnbits, opcode_t op,
                 dst = XZR_NUM;
             }
         }
+        if (op == OP_LDUR || op == OP_STUR){
+            if (src2 == SP_NUM || dst == SP_NUM){
+                src2 = XZR_NUM;
+                dst = XZR_NUM;
+            }
+        }
+        
     }
 
     //RET only has src1, as dst is always 30
@@ -306,8 +316,12 @@ comb_logic_t decode_instr(d_instr_impl_t *in, x_instr_impl_t *out) {
     out->W_sigs = local_W_sigs;
 
     uint8_t src1, src2, dst, val_w;
+    src1 = 0;
+    src2 = 0; 
+    dst = 0;
+    //val_w = 0;
     extract_regs(in->insnbits, in->op, &src1, &src2, &dst);
-    regfile(src1, src2, out->dst, &val_w, out->W_sigs.w_enable, &out->val_a, &out->val_b);
+    regfile(src1, src2, W_out->dst, W_wval, out->W_sigs.w_enable, &out->val_a, &out->val_b);
     decide_alu_op(in->op, &out->ALU_op);
     extract_immval(in->insnbits, in->op, &out->val_imm);
 

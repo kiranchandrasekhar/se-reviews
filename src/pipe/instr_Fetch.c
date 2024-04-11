@@ -159,8 +159,9 @@ comb_logic_t fetch_instr(f_instr_impl_t *in, d_instr_impl_t *out) {
         imem_err = false;
     }
     else {
-        imem(current_PC, &out->insnbits, &imem_err);
-        // if (!imem_err) { 
+        uint32_t isnbits = 0;
+        imem(current_PC, &isnbits, &imem_err);
+        out->insnbits = isnbits; 
         out->op = itable[bitfield_u32(out->insnbits, 21, 11)];
         out->print_op = out->op;   
         fix_instr_aliases(out->insnbits, &out->op);
