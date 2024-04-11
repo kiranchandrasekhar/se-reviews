@@ -215,9 +215,12 @@ extract_regs(uint32_t insnbits, opcode_t op,
     //if u read in a 31, need to know if u interpret it as the stack pointer or the xzr. if it is xzr, 
     //left ops, interpret as stack pointer, and everything else is xzr
 
-    if (!(op == OP_MOVZ || op == OP_NOP || op == OP_HLT)){
+    if (!(op == OP_MOVZ || op == OP_NOP || op == OP_HLT || 
+          op == OP_MOVK || op == OP_ADRP || op == OP_RET ||
+          op == OP_B_COND || op == OP_B || op == OP_BL)){
         src1 = bitfield_u32(insnbits, 5, 5) && 0xff;
     }
+    // includes LDUR, STUR, 
     //added mvn which was not in old implementation
     if (op == OP_ADDS_RR || op == OP_SUBS_RR || op == OP_CMP_RR ||
         op == OP_ORR_RR || op == OP_EOR_RR || op == OP_ANDS_RR ||
