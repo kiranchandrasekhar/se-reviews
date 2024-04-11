@@ -1,14 +1,14 @@
-Machine state checkpoint after 12 cycles:
+Machine state checkpoint after 22 cycles:
 	Processor state:
-		Program Counter: 400130
+		Program Counter: 400158
 		Stack Pointer: 7fffffff8
 		Condition Flags: [N,Z,C,V] = [0, 1, 0, 0]
 		General Purpose Register File state:
-			Register  X0: 1
-			Register  X1: fff
-			Register  X2: 0
-			Register  X3: 0
-			Register  X4: 2
+			Register  X0: cdef000000000000
+			Register  X1: 1234
+			Register  X2: 56780000
+			Register  X3: 90ab00000000
+			Register  X4: 0
 			Register  X5: 0
 			Register  X6: 0
 			Register  X7: 0
@@ -42,14 +42,14 @@ Machine state checkpoint after 12 cycles:
 			Address 0x400010: 0x100b70002
 			Address 0x400018: 0x400110
 			Address 0x400020: 0x40
-			Address 0x400028: 0x358
+			Address 0x400028: 0x380
 			Address 0x400030: 0x38004000000000
 			Address 0x400038: 0x6000700400003
 			Address 0x400040: 0x500000001
 			Address 0x400050: 0x400000
 			Address 0x400058: 0x400000
-			Address 0x400060: 0x12c
-			Address 0x400068: 0x12c
+			Address 0x400060: 0x154
+			Address 0x400068: 0x154
 			Address 0x400070: 0x10000
 			Address 0x400078: 0x400000004
 			Address 0x400080: 0xe8
@@ -62,13 +62,18 @@ Machine state checkpoint after 12 cycles:
 			Address 0x4000e0: 0x10
 			Address 0x4000e8: 0x1400000004
 			Address 0x4000f0: 0x554e4700000003
-			Address 0x4000f8: 0xc4e83a9ce8a18db
-			Address 0x400100: 0x777d8d0febbcf923
-			Address 0x400108: 0x22b3d305
-			Address 0x400110: 0x913ffc2191000400
-			Address 0x400118: 0xd503201fd503201f
-			Address 0x400120: 0x91000404d503201f
-			Address 0x400128: 0xd65f03c0
+			Address 0x4000f8: 0xce252abb5a887302
+			Address 0x400100: 0x2072ce7bd89935a0
+			Address 0x400108: 0xe2179a02
+			Address 0x400110: 0xd2aacf01d2824680
+			Address 0x400118: 0xd2f9bde3d2d21562
+			Address 0x400120: 0xd2d21561d2aacf00
+			Address 0x400128: 0xd2824683d2f9bde2
+			Address 0x400130: 0xd2f9bde1d2d21560
+			Address 0x400138: 0xd2aacf03d2824682
+			Address 0x400140: 0xd2824681d2f9bde0
+			Address 0x400148: 0xd2d21563d2aacf02
+			Address 0x400150: 0xd65f03c0
 		Data segment:
 		Heap:
 		Stack:

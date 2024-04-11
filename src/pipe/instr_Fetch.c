@@ -166,8 +166,8 @@ comb_logic_t fetch_instr(f_instr_impl_t *in, d_instr_impl_t *out) {
         out->print_op = out->op;   
         fix_instr_aliases(out->insnbits, &out->op);
         // pass in &F_PC 
-        predict_PC(current_PC, out->insnbits, out->op, &in->pred_PC, &out->seq_succ_PC);
-        F_PC = in->pred_PC;
+        predict_PC(current_PC, out->insnbits, out->op, &F_PC, &out->seq_succ_PC);
+        in->pred_PC = F_PC;
         if (out->op == OP_ADRP){
             out->adrp_val = (out->this_PC && 0xfffffffffffff000) + 
             (bitfield_s64(out->insnbits, 5, 19) << 12);
