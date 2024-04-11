@@ -168,7 +168,7 @@ comb_logic_t fetch_instr(f_instr_impl_t *in, d_instr_impl_t *out) {
             const uint32_t OPCODE_SHIFT = 29;  
             opcode_t opcode = (insnbits >> OPCODE_SHIFT) & OPCODE_MASK;
 
-            fix_instr_aliases(insnbits, &opcode);
+            fix_instr_aliases(insnbits, &opcode); 
 
             uint64_t predicted_PC;
             uint64_t seq_succ;
