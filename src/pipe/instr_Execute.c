@@ -51,6 +51,7 @@ comb_logic_t execute_instr(x_instr_impl_t *in, m_instr_impl_t *out) {
     out->seq_succ_PC = in->seq_succ_PC;
     out->dst = in->dst;
     out->cond_holds = condVal;
+    out->val_b = in->val_b;
     
     return;
 }

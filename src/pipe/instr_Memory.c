@@ -35,15 +35,11 @@ extern comb_logic_t copy_w_ctl_sigs(w_ctl_sigs_t *, w_ctl_sigs_t *);
 
 comb_logic_t memory_instr(m_instr_impl_t *in, w_instr_impl_t *out) {
     
-    bool *memError;
+    bool memError = false;
 
     copy_w_ctl_sigs(&out->W_sigs, &in->W_sigs);
-    if (in->M_sigs.dmem_read) {
-        dmem(in->val_ex, 0, true, false, &out->val_mem, &memError);
-    }
-    else if (in->M_sigs.dmem_write) {
-        dmem(in->val_ex, in->val_b, false, true, NULL, &memError);
-    }
+    
+    dmem(in->val_ex, in->val_b, in->M_sigs.dmem_read, in->M_sigs.dmem_write, &out->val_mem, &memError);
 
     //check for memory errors and update status 
     if (memError && (in->op == OP_LDUR || in->op == OP_STUR)){

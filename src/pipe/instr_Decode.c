@@ -211,31 +211,69 @@ copy_w_ctl_sigs(w_ctl_sigs_t *dest, w_ctl_sigs_t *src) {
 comb_logic_t
 extract_regs(uint32_t insnbits, opcode_t op, 
              uint8_t *src1, uint8_t *src2, uint8_t *dst) {
-    *src1 = 0;
-    *src2 = 0;
-    *dst = 0;
+    
+    //rn is first src, starts at 5 and goes 5 across. if not movz, nop, hlt, then get src 1 to be this bit field u 32, 
+    //if u read in a 31, need to know if u interpret it as the stack pointer or the xzr. if it is xzr, 
+    //left ops, interpret as stack pointer, and everything else is xzr
 
+    if (!(op == OP_MOVZ || op == OP_NOP || op == OP_HLT)){
+        src1 = bitfield_u32(src1, 5, 5);
+    }
+    //added mvn which was not in old implementation
     if (op == OP_ADDS_RR || op == OP_SUBS_RR || op == OP_CMP_RR ||
         op == OP_ORR_RR || op == OP_EOR_RR || op == OP_ANDS_RR ||
-        op == OP_TST_RR) {
-        *src1 = (insnbits >> 5) & 0x1F;  
-        *src2 = (insnbits >> 16) & 0x1F;
-        *dst = insnbits & 0x1F;          
+        op == OP_TST_RR || op == OP_MVN){
+        src2 = bitfield_u32(src2, 16, 5);
     }
-    else if (op == OP_ADD_RI || op == OP_SUB_RI || op == OP_LSL ||
-             op == OP_LSR || op == OP_ASR || op == OP_UBFM || op == OP_LDUR ||
-             op == OP_STUR) {
-        *src1 = (insnbits >> 5) & 0x1F;  
-        *dst = insnbits & 0x1F;  
+    if (op != OP_RET){
+        dst = bitfield_u32(dst, 0, 5);
     }
-    else if (op == OP_RET) {
-        *src1 = (insnbits >> 5) & 0x1F;  
-    } 
-    else {
-        *src1 = 0;
-        *src2 = 0;
-        *dst = 0;
+    //error checking of registers being SP
+    if (src1 == SP_NUM || src2 == SP_NUM || dst == SP_NUM){
+        if (!(op == OP_LDUR || op == OP_STUR || op == OP_ADD_RI || op == OP_SUB_RI || op == OP_SUBS_RR)){
+            if (src1 == SP_NUM){
+                src1 = XZR_NUM;
+            }
+            if(src2 == SP_NUM){
+                src2 = XZR_NUM;
+            }
+            if(dst == SP_NUM){
+                dst = XZR_NUM;
+            }
+        }
     }
+
+    //RET only has src1, as dst is always 30
+    // else if(op == OP_RET){
+    //     dst = bitfield_u32(dst, 5, 5);
+    // }
+
+    //old implementation
+    // *src1 = 0;
+    // *src2 = 0;
+    // *dst = 0;
+
+    // if (op == OP_ADDS_RR || op == OP_SUBS_RR || op == OP_CMP_RR ||
+    //     op == OP_ORR_RR || op == OP_EOR_RR || op == OP_ANDS_RR ||
+    //     op == OP_TST_RR) {
+    //     *src1 = (insnbits >> 5) & 0x1F;  
+    //     *src2 = (insnbits >> 16) & 0x1F;
+    //     *dst = insnbits & 0x1F;          
+    // }
+    // else if (op == OP_ADD_RI || op == OP_SUB_RI || op == OP_LSL ||
+    //          op == OP_LSR || op == OP_ASR || op == OP_UBFM || op == OP_LDUR ||
+    //          op == OP_STUR) {
+    //     *src1 = (insnbits >> 5) & 0x1F;  
+    //     *dst = insnbits & 0x1F;  
+    // }
+    // else if (op == OP_RET) {
+    //     *src1 = (insnbits >> 5) & 0x1F;  
+    // } 
+    // else {
+    //     *src1 = 0;
+    //     *src2 = 0;
+    //     *dst = 0;
+    // }
 }
 
 /*
