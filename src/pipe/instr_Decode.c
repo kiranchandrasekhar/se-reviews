@@ -87,7 +87,7 @@ extract_immval(uint32_t insnbits, opcode_t op, int64_t *imm) {
             break;
         case OP_B_COND:
         case OP_ADRP:
-            *imm = ((bitfield_s64(insnbits, 5, 19) << 14) | bitfield_s64(insnbits, 29, 2) << 12) & ~0xfff;
+            *imm = ((bitfield_s64(insnbits, 5, 19) << 14) | bitfield_s64(insnbits, 29, 2) << 12) & 0x000;
             break;
         case OP_ADD_RI:
         case OP_SUB_RI:
@@ -118,6 +118,7 @@ decide_alu_op(opcode_t op, alu_op_t *ALU_op) {
         case OP_ADDS_RR:
         case OP_STUR:
         case OP_LDUR:
+        case OP_ADRP:
             *ALU_op = PLUS_OP;
             break;
         case OP_SUB_RI:
@@ -210,15 +211,21 @@ extract_regs(uint32_t insnbits, opcode_t op,
     //added mvn which was not in old implementation
     if (op == OP_ADDS_RR || op == OP_SUBS_RR || op == OP_CMP_RR ||
         op == OP_ORR_RR || op == OP_EOR_RR || op == OP_ANDS_RR ||
-        op == OP_TST_RR || op == OP_MVN){
+        op == OP_TST_RR || op == OP_MVN || op == OP_STUR){
         *src2 = (uint8_t *) bitfield_u32(insnbits, 16, 5);
     }
-    if (op != OP_RET){
+    if (op != OP_RET && op != OP_STUR){
         *dst = (uint8_t *) bitfield_u32(insnbits, 0, 5);
     }
     if (op == OP_RET){
         *src1 = (uint8_t *) bitfield_u32(insnbits, 5, 5);
     }
+    if (op == OP_STUR){
+        *src2 = (uint8_t *) bitfield_u32(insnbits, 0, 5);
+    }
+    if (op == OP_MOVK){
+            *src1 = *dst;
+        }
     //error checking of registers being SP
     if (*src1 == SP_NUM || *src2 == SP_NUM || *dst == SP_NUM){
         if (!(op == OP_LDUR || op == OP_STUR || op == OP_ADD_RI || op == OP_SUB_RI)){
@@ -239,9 +246,6 @@ extract_regs(uint32_t insnbits, opcode_t op,
             if (*dst == SP_NUM){
                 *dst = XZR_NUM;
             }
-        }
-        if (op == OP_MOVK){
-            *src1 = *dst;
         }
         
     }
