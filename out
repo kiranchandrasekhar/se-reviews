@@ -4,10 +4,12 @@ Machine state checkpoint after 45 cycles:
 		Stack Pointer: 7fffffff8
 		Condition Flags: [N,Z,C,V] = [0, 1, 0, 0]
 		General Purpose Register File state:
+
 			Register  X0: 2b3c000000009101
 			Register  X1: 0
 			Register  X2: 0
 			Register  X3: 0
+
 			Register  X4: 0
 			Register  X5: ffffffffffffffff
 			Register  X6: 0
@@ -51,6 +53,7 @@ Machine state checkpoint after 45 cycles:
 			Address 0x400060: 0x150
 			Address 0x400068: 0x150
 			Address 0x400070: 0x10000
+
 			Address 0x400078: 0x66474e551
 			Address 0x4000a8: 0x10
 			Address 0x4000b0: 0xd503201ff2824680
@@ -73,6 +76,7 @@ Machine state checkpoint after 45 cycles:
 			Address 0x400138: 0xd503201fd503201f
 			Address 0x400140: 0xd503201fd503201f
 			Address 0x400148: 0xd65f03c0d503201f
+
 		Data segment:
 		Heap:
 		Stack:

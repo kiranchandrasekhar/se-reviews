@@ -245,7 +245,8 @@ extract_regs(uint32_t insnbits, opcode_t op,
             if (*src2 == SP_NUM){
                 *src2 = XZR_NUM;
             }
-            if (*dst == SP_NUM){
+            if(*dst == SP_NUM){
+
                 *dst = XZR_NUM;
             }
         }

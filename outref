@@ -8,6 +8,7 @@ Machine state checkpoint after 45 cycles:
 			Register  X1: 0
 			Register  X2: 0
 			Register  X3: 0
+
 			Register  X4: 0
 			Register  X5: ffffffffffffffff
 			Register  X6: 0
@@ -73,6 +74,29 @@ Machine state checkpoint after 45 cycles:
 			Address 0x400138: 0xd503201fd503201f
 			Address 0x400140: 0xd503201fd503201f
 			Address 0x400148: 0xd65f03c0d503201f
+			Address 0x400078: 0x400000004
+			Address 0x400080: 0xe8
+			Address 0x400088: 0x4000e8
+			Address 0x400090: 0x4000e8
+			Address 0x400098: 0x24
+			Address 0x4000a0: 0x24
+			Address 0x4000a8: 0x4
+			Address 0x4000b0: 0x66474e551
+			Address 0x4000e0: 0x10
+			Address 0x4000e8: 0x1400000004
+			Address 0x4000f0: 0x554e4700000003
+			Address 0x4000f8: 0xe380aa631dc6267c
+			Address 0x400100: 0xd67756461b0e533b
+			Address 0x400108: 0x5ab60747
+			Address 0x400110: 0xf2aacf01f2824680
+			Address 0x400118: 0xf2f9bde3f2d21562
+			Address 0x400120: 0xf2d21561f2aacf00
+			Address 0x400128: 0xf2824683f2f9bde2
+			Address 0x400130: 0xf2f9bde1f2d21560
+			Address 0x400138: 0xf2aacf03f2824682
+			Address 0x400140: 0xf2824681f2f9bde0
+			Address 0x400148: 0xf2d21563f2aacf02
+			Address 0x400150: 0xd65f03c0
 		Data segment:
 		Heap:
 		Stack:
