@@ -82,7 +82,7 @@ predict_PC(uint64_t current_PC, uint32_t insnbits, opcode_t op,
             break;
         case OP_B_COND:
             offset = bitfield_s64(insnbits, 5, 19);
-            *predicted_PC = current_PC + offset;
+            *predicted_PC = current_PC + (offset * 4);
             break;
                 
         default:
@@ -101,30 +101,23 @@ predict_PC(uint64_t current_PC, uint32_t insnbits, opcode_t op,
 
 static
 void fix_instr_aliases(uint32_t insnbits, opcode_t *op) {
-    unsigned sf = (insnbits >> 31) & 1;
-    unsigned immr = (insnbits >> 16) & 0x3F;
-    unsigned imms = (insnbits >> 10) & 0x3F;
+    unsigned immr = bitfield_u32(insnbits, 16, 6);
+    unsigned imms = bitfield_u32(insnbits, 10, 6) & 0x3f;
     unsigned Rd = insnbits & 0x1F;
-    unsigned N = (insnbits >> 22) & 1;
     
     // ChArm-v2 only uses x registers 
-    if (sf == 1) {
-        if (*op == OP_UBFM) {
-            if (N == 1) {
-                unsigned shift_amount = 63 - imms;
-                if (imms != 0b111111 && ((imms + 1) & 0x3F) == immr) {
-                    *op = OP_LSL;
-                } else if (imms == 0b111111 && ((shift_amount & 0x3F) == immr)) {
-                    *op = OP_LSR;
-                }
-            }
+    if (*op == OP_UBFM) {
+        if (imms != 0b111111 && imms + 1 == immr) {
+            *op = OP_LSL;
+        } else {
+            *op = OP_LSR;
         }
-        else if (*op == OP_CMP_RR && Rd == 0b11111) {
-            *op = OP_SUBS_RR;
-        }
-        else if (*op == OP_TST_RR && Rd == 0b11111) {
-            *op = OP_ANDS_RR;
-        }
+    }
+    else if (*op == OP_CMP_RR && Rd == 0b11111) {
+        *op = OP_SUBS_RR;
+    }
+    else if (*op == OP_TST_RR && Rd == 0b11111) {
+        *op = OP_ANDS_RR;
     }
 }
 
@@ -162,15 +155,17 @@ comb_logic_t fetch_instr(f_instr_impl_t *in, d_instr_impl_t *out) {
         uint32_t isnbits = 0;
         imem(current_PC, &isnbits, &imem_err);
         out->insnbits = isnbits; 
-        out->op = itable[bitfield_u32(out->insnbits, 21, 11)];
-        out->print_op = out->op;   
+        out->op = itable[bitfield_u32(out->insnbits, 21, 11)];  
         fix_instr_aliases(out->insnbits, &out->op);
+        out->print_op = out->op; 
         // pass in &F_PC 
         predict_PC(current_PC, out->insnbits, out->op, &F_PC, &out->seq_succ_PC);
         in->pred_PC = F_PC;
         if (out->op == OP_ADRP){
-            out->adrp_val = (out->this_PC && 0xfffffffffffff000) + 
-            (bitfield_s64(out->insnbits, 5, 19) << 12);
+            out->adrp_val = current_PC & ~0xfff;
+        }
+        else {
+            out->adrp_val = 0;
         }
         // in->status = STAT_AOK;
         // } else {

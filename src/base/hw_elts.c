@@ -41,7 +41,7 @@ regfile(uint8_t src1, uint8_t src2, uint8_t dst, uint64_t val_w,
         if (src1 == 31){
             *val_a = guest.proc->SP;
         }
-        else if (src1 == 32){
+        else if (src1 >= 32){
             *val_a = 0;
         }
         else {
@@ -50,7 +50,7 @@ regfile(uint8_t src1, uint8_t src2, uint8_t dst, uint64_t val_w,
         if (src2 == 31){
             *val_b = guest.proc->SP;
         }
-        else if (src2 == 32){
+        else if (src2 >= 32){
             *val_b = 0;
         }
         else {
