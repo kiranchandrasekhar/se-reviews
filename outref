@@ -1,17 +1,17 @@
-Machine state checkpoint after 20 cycles:
+Machine state checkpoint after 45 cycles:
 	Processor state:
-		Program Counter: 400150
+		Program Counter: 400154
 		Stack Pointer: 7fffffff8
 		Condition Flags: [N,Z,C,V] = [0, 1, 0, 0]
 		General Purpose Register File state:
-			Register  X0: 1f
-			Register  X1: 29
-			Register  X2: 3b
-			Register  X3: 1a
-			Register  X4: 1f
-			Register  X5: 29
-			Register  X6: 3b
-			Register  X7: 1a
+			Register  X0: 123456789101
+			Register  X1: 0
+			Register  X2: 0
+			Register  X3: 0
+			Register  X4: 0
+			Register  X5: ffffffffffffffff
+			Register  X6: 0
+			Register  X7: 0
 			Register  X8: 0
 			Register  X9: 0
 			Register X10: 0
@@ -40,44 +40,40 @@ Machine state checkpoint after 20 cycles:
 		Text segment:
 			Address 0x400000: 0x10102464c457f
 			Address 0x400010: 0x100b70002
-			Address 0x400018: 0x400110
+			Address 0x400018: 0x4000b0
 			Address 0x400020: 0x40
-			Address 0x400028: 0x378
+			Address 0x400028: 0x348
 			Address 0x400030: 0x38004000000000
-			Address 0x400038: 0x6000700400003
+			Address 0x400038: 0x5000600400002
 			Address 0x400040: 0x500000001
 			Address 0x400050: 0x400000
 			Address 0x400058: 0x400000
-			Address 0x400060: 0x14c
-			Address 0x400068: 0x14c
+			Address 0x400060: 0x150
+			Address 0x400068: 0x150
 			Address 0x400070: 0x10000
-			Address 0x400078: 0x400000004
-			Address 0x400080: 0xe8
-			Address 0x400088: 0x4000e8
-			Address 0x400090: 0x4000e8
-			Address 0x400098: 0x24
-			Address 0x4000a0: 0x24
-			Address 0x4000a8: 0x4
-			Address 0x4000b0: 0x66474e551
-			Address 0x4000e0: 0x10
-			Address 0x4000e8: 0x1400000004
-			Address 0x4000f0: 0x554e4700000003
-			Address 0x4000f8: 0x56cb5537cc5709be
-			Address 0x400100: 0x3ee45a32e593fba
-			Address 0x400108: 0x400a635e
-			Address 0x400110: 0xd28003e0d10083ff
-			Address 0x400118: 0xd2800762d2800521
-			Address 0x400120: 0xf80003e0d2800343
-			Address 0x400128: 0xf80103e2f80083e1
-			Address 0x400130: 0xf84003e4f80183e3
-			Address 0x400138: 0xf84103e6f84083e5
-			Address 0x400140: 0x910083fff84183e7
-			Address 0x400148: 0xd65f03c0
+			Address 0x400078: 0x66474e551
+			Address 0x4000a8: 0x10
+			Address 0x4000b0: 0xd503201ff2824680
+			Address 0x4000b8: 0xd503201fd503201f
+			Address 0x4000c0: 0xd503201fd370bc00
+			Address 0x4000c8: 0xd503201fd503201f
+			Address 0x4000d0: 0xd503201ff28acf00
+			Address 0x4000d8: 0xd503201fd503201f
+			Address 0x4000e0: 0xd503201fd503201f
+			Address 0x4000e8: 0xd370bc00d503201f
+			Address 0x4000f0: 0xd503201fd503201f
+			Address 0x4000f8: 0xf2922020d503201f
+			Address 0x400100: 0xd503201fd503201f
+			Address 0x400108: 0xca0500a5d503201f
+			Address 0x400110: 0xd503201fd503201f
+			Address 0x400118: 0xaa2503e5d503201f
+			Address 0x400120: 0xd503201fd503201f
+			Address 0x400128: 0xf80000a0d503201f
+			Address 0x400130: 0xd503201fd503201f
+			Address 0x400138: 0xd503201fd503201f
+			Address 0x400140: 0xd503201fd503201f
+			Address 0x400148: 0xd65f03c0d503201f
 		Data segment:
 		Heap:
 		Stack:
-			Address 0x7ffffffd8: 0x1f
-			Address 0x7ffffffe0: 0x29
-			Address 0x7ffffffe8: 0x3b
-			Address 0x7fffffff0: 0x1a
 
