@@ -57,7 +57,7 @@ generate_DXMW_control(opcode_t op,
 
     X_sigs->valb_sel = (op == OP_ADDS_RR) || (op == OP_ANDS_RR) || 
                        (op == OP_SUBS_RR)|| (op == OP_CMP_RR) || (op == OP_TST_RR) || (op == OP_ORR_RR) ||
-                       (op == OP_EOR_RR);
+                       (op == OP_EOR_RR) || (op == OP_MVN);
 
     X_sigs->set_CC = (op == OP_ADDS_RR) || (op == OP_SUBS_RR) || (op == OP_ANDS_RR) || (op == OP_CMP_RR) || (op == OP_TST_RR);
 
@@ -87,7 +87,7 @@ extract_immval(uint32_t insnbits, opcode_t op, int64_t *imm) {
             break;
         case OP_B_COND:
         case OP_ADRP:
-            *imm = bitfield_s64(insnbits, 5, 19);
+            *imm = ((bitfield_s64(insnbits, 5, 19) << 14) | bitfield_s64(insnbits, 29, 2) << 12) & ~0xfff;
             break;
         case OP_ADD_RI:
         case OP_SUB_RI:
@@ -116,6 +116,8 @@ decide_alu_op(opcode_t op, alu_op_t *ALU_op) {
     switch (op) {
         case OP_ADD_RI:
         case OP_ADDS_RR:
+        case OP_STUR:
+        case OP_LDUR:
             *ALU_op = PLUS_OP;
             break;
         case OP_SUB_RI:
@@ -231,10 +233,15 @@ extract_regs(uint32_t insnbits, opcode_t op,
             }
         }
         if (op == OP_LDUR || op == OP_STUR){
-            if (*src2 == SP_NUM || *dst == SP_NUM){
+            if (*src2 == SP_NUM){
                 *src2 = XZR_NUM;
+            }
+            if (*dst == SP_NUM){
                 *dst = XZR_NUM;
             }
+        }
+        if (op == OP_MOVK){
+            *src1 = *dst;
         }
         
     }
