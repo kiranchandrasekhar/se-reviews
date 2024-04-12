@@ -217,6 +217,9 @@ extract_regs(uint32_t insnbits, opcode_t op,
     if (op == OP_RET){
         *src1 = (uint8_t *) bitfield_u32(insnbits, 5, 5);
     }
+    if (op == OP_MOVK){
+        *src1 = *dst;
+    }
     //error checking of registers being SP
     if (*src1 == SP_NUM || *src2 == SP_NUM || *dst == SP_NUM){
         if (!(op == OP_LDUR || op == OP_STUR || op == OP_ADD_RI || op == OP_SUB_RI)){
@@ -231,8 +234,10 @@ extract_regs(uint32_t insnbits, opcode_t op,
             }
         }
         if (op == OP_LDUR || op == OP_STUR){
-            if (*src2 == SP_NUM || *dst == SP_NUM){
+            if (*src2 == SP_NUM){
                 *src2 = XZR_NUM;
+            }
+            if(*dst == SP_NUM){
                 *dst = XZR_NUM;
             }
         }
