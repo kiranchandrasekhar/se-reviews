@@ -38,12 +38,24 @@ regfile(uint8_t src1, uint8_t src2, uint8_t dst, uint64_t val_w,
     // bool src1_31isSP, bool src2_31isSP, bool dst_31isSP, 
     bool w_enable,
     uint64_t *val_a, uint64_t *val_b) {
-        if(src1 < 32){
-            *val_a = guest.proc->GPR[src1];
-        } else {
+        if (src1 == 31){
+            *val_a = guest.proc->SP;
+        }
+        else if (src1 == 32){
             *val_a = 0;
         }
-        *val_b = guest.proc->GPR[src2];
+        else {
+            *val_a = guest.proc->GPR[src1];
+        }
+        if (src2 == 31){
+            *val_b = guest.proc->SP;
+        }
+        else if (src2 == 32){
+            *val_b = 0;
+        }
+        else {
+            *val_b = guest.proc->GPR[src2];
+        }
         if (w_enable){
             guest.proc->GPR[dst] = val_w;
         }

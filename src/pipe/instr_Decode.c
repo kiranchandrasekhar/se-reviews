@@ -57,7 +57,7 @@ generate_DXMW_control(opcode_t op,
 
     X_sigs->valb_sel = (op == OP_ADDS_RR) || (op == OP_ANDS_RR) || 
                        (op == OP_SUBS_RR)|| (op == OP_CMP_RR) || (op == OP_TST_RR) || (op == OP_ORR_RR) ||
-                       (op == EOR_OP);
+                       (op == OP_EOR_RR);
 
     X_sigs->set_CC = (op == OP_ADDS_RR) || (op == OP_SUBS_RR) || (op == OP_ANDS_RR) || (op == OP_CMP_RR) || (op == OP_TST_RR);
 
@@ -311,7 +311,16 @@ comb_logic_t decode_instr(d_instr_impl_t *in, x_instr_impl_t *out) {
     out->op = in->op;
     out->print_op = in->print_op; 
     out->seq_succ_PC = in->seq_succ_PC; 
-    out->status = in->status; 
-
+    out->status = in->status;
+    if (in->op == OP_MOVZ){
+        out->val_a = 0;
+        out->val_hw = bitfield_u32(in->insnbits, 21, 2) << 4;
+    }
+    else if (in->op == OP_MOVK){
+        out->val_hw = bitfield_u32(in->insnbits, 21, 2) << 4;
+    }
+    else {
+        out->val_hw = 0;
+    }
 
 }
