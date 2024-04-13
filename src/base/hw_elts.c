@@ -256,6 +256,8 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
         default:
             break;
     }
+	    res_msb = (res >> 63) && 0x1;
+
     if (res == 0){
         z = 1;
     }if (res_msb == 1){
