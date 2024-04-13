@@ -222,6 +222,9 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
             if ((vala_msb == 0 && valb_msb == 1 && res_msb == 0 ) || (vala_msb == 1 && valb_msb == 0 && res_msb == 1)){
                 v = 1;
             }
+            else {
+                v = 0;
+            }
             break;
         case INV_OP:
             res = alu_vala | (~alu_valb);
