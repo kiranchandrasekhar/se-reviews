@@ -41,6 +41,9 @@ comb_logic_t execute_instr(x_instr_impl_t *in, m_instr_impl_t *out) {
     // Copy control signals for the next pipeline stages.
     copy_m_ctl_sigs(&out->M_sigs, &in->M_sigs);
     copy_w_ctl_sigs(&out->W_sigs, &in->W_sigs);
+    // if (in->op == OP_MOVK){
+    //     in->val_a = in->val_a & ~0xffff;
+    // }
     alu(in->val_a, aluOperandB, in->val_hw, in->ALU_op, in->X_sigs.set_CC, in->cond, &out->val_ex, &condVal, &guest.proc->NZCV);
     //preparing data to be sent to memory
     out->op = in->op;

@@ -78,7 +78,7 @@ predict_PC(uint64_t current_PC, uint32_t insnbits, opcode_t op,
         case OP_B:
         case OP_BL:
             offset = bitfield_s64(insnbits, 0, 26);
-            *predicted_PC = current_PC + offset;
+            *predicted_PC = current_PC + (offset * 4);
             break;
         case OP_B_COND:
             offset = bitfield_s64(insnbits, 5, 19);
@@ -160,7 +160,7 @@ comb_logic_t fetch_instr(f_instr_impl_t *in, d_instr_impl_t *out) {
         out->print_op = out->op; 
         // pass in &F_PC 
         predict_PC(current_PC, out->insnbits, out->op, &F_PC, &out->seq_succ_PC);
-        in->pred_PC = F_PC;
+        //in->pred_PC = F_PC;
         if (out->op == OP_ADRP){
             out->adrp_val = current_PC & ~0xfff;
         }

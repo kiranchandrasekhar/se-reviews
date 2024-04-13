@@ -93,14 +93,16 @@ extract_immval(uint32_t insnbits, opcode_t op, int64_t *imm) {
             break;
         case OP_ADD_RI:
         case OP_SUB_RI:
-        case OP_LSL:
-        case OP_LSR:
         case OP_ASR:
             *imm = bitfield_u32(insnbits, 10, 12);
             break;
         case OP_B:
         case OP_BL:
             *imm = bitfield_s64(insnbits, 0, 26);
+            break;
+        case OP_LSL:
+        case OP_LSR:
+            *imm = bitfield_u32(insnbits, 16, 5);
             break;
         default:
             break;
@@ -205,7 +207,7 @@ extract_regs(uint32_t insnbits, opcode_t op,
     //left ops, interpret as stack pointer, and everything else is xzr
 
     if (!(op == OP_MOVZ || op == OP_NOP || op == OP_HLT || 
-          op == OP_MOVK || op == OP_ADRP || op == OP_RET ||
+          op == OP_ADRP || op == OP_RET ||
           op == OP_B_COND || op == OP_B || op == OP_BL)){
         *src1 = (uint8_t *) bitfield_u32(insnbits, 5, 5);
     }
@@ -226,8 +228,8 @@ extract_regs(uint32_t insnbits, opcode_t op,
         *src2 = (uint8_t *) bitfield_u32(insnbits, 0, 5);
     }
     if (op == OP_MOVK){
-            *src1 = *dst;
-        }
+        *src1 = *dst;
+    }
     //error checking of registers being SP
     if (*src1 == SP_NUM || *src2 == SP_NUM || *dst == SP_NUM){
         if (!(op == OP_LDUR || op == OP_STUR || op == OP_ADD_RI || op == OP_SUB_RI)){
@@ -308,9 +310,10 @@ comb_logic_t decode_instr(d_instr_impl_t *in, x_instr_impl_t *out) {
     }
     else if (in->op == OP_MOVK){
         out->val_hw = bitfield_u32(in->insnbits, 21, 2) << 4;
-        uint64_t zero_mask = ((uint64_t)1 << (out->val_hw + 16)) - 1;
-        zero_mask ^= ((uint64_t)1 << out->val_hw) - 1;
-        out->val_a =  out->val_a & ~zero_mask;
+        uint64_t zero_mask = ((uint64_t)0xFFFF << out->val_hw);
+
+        out->val_a = (out->val_a & ~zero_mask);
+        // out->val_b = ~zero_mask << out->val_hw;
     }
     else {
         out->val_hw = 0;

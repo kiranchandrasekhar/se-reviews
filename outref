@@ -1,16 +1,15 @@
-Machine state checkpoint after 45 cycles:
+Machine state checkpoint after 22 cycles:
 	Processor state:
-		Program Counter: 400154
+		Program Counter: 400158
 		Stack Pointer: 7fffffff8
 		Condition Flags: [N,Z,C,V] = [0, 1, 0, 0]
 		General Purpose Register File state:
-			Register  X0: 123456789101
-			Register  X1: 0
-			Register  X2: 0
-			Register  X3: 0
-
+			Register  X0: cdef90ab56781234
+			Register  X1: cdef90ab56781234
+			Register  X2: cdef90ab56781234
+			Register  X3: cdef90ab56781234
 			Register  X4: 0
-			Register  X5: ffffffffffffffff
+			Register  X5: 0
 			Register  X6: 0
 			Register  X7: 0
 			Register  X8: 0
@@ -41,39 +40,17 @@ Machine state checkpoint after 45 cycles:
 		Text segment:
 			Address 0x400000: 0x10102464c457f
 			Address 0x400010: 0x100b70002
-			Address 0x400018: 0x4000b0
+			Address 0x400018: 0x400110
 			Address 0x400020: 0x40
-			Address 0x400028: 0x348
+			Address 0x400028: 0x380
 			Address 0x400030: 0x38004000000000
-			Address 0x400038: 0x5000600400002
+			Address 0x400038: 0x6000700400003
 			Address 0x400040: 0x500000001
 			Address 0x400050: 0x400000
 			Address 0x400058: 0x400000
-			Address 0x400060: 0x150
-			Address 0x400068: 0x150
+			Address 0x400060: 0x154
+			Address 0x400068: 0x154
 			Address 0x400070: 0x10000
-			Address 0x400078: 0x66474e551
-			Address 0x4000a8: 0x10
-			Address 0x4000b0: 0xd503201ff2824680
-			Address 0x4000b8: 0xd503201fd503201f
-			Address 0x4000c0: 0xd503201fd370bc00
-			Address 0x4000c8: 0xd503201fd503201f
-			Address 0x4000d0: 0xd503201ff28acf00
-			Address 0x4000d8: 0xd503201fd503201f
-			Address 0x4000e0: 0xd503201fd503201f
-			Address 0x4000e8: 0xd370bc00d503201f
-			Address 0x4000f0: 0xd503201fd503201f
-			Address 0x4000f8: 0xf2922020d503201f
-			Address 0x400100: 0xd503201fd503201f
-			Address 0x400108: 0xca0500a5d503201f
-			Address 0x400110: 0xd503201fd503201f
-			Address 0x400118: 0xaa2503e5d503201f
-			Address 0x400120: 0xd503201fd503201f
-			Address 0x400128: 0xf80000a0d503201f
-			Address 0x400130: 0xd503201fd503201f
-			Address 0x400138: 0xd503201fd503201f
-			Address 0x400140: 0xd503201fd503201f
-			Address 0x400148: 0xd65f03c0d503201f
 			Address 0x400078: 0x400000004
 			Address 0x400080: 0xe8
 			Address 0x400088: 0x4000e8
