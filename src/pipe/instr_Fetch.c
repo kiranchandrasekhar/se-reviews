@@ -42,15 +42,13 @@ select_PC(uint64_t pred_PC,                                       // The predict
         return;
     }
     if (M_opcode == OP_B_COND && (M_cond_val == false)) {
-        *current_PC = seq_succ; // This should be the correct sequential successor address
+        *current_PC = seq_succ; 
         return;
     }
-
     if (D_opcode == OP_RET) {
-        *current_PC = val_a; // The return address is in val_a
+        *current_PC = val_a; 
         return;
     }
-
     *current_PC = pred_PC;
 }
 
@@ -105,7 +103,6 @@ void fix_instr_aliases(uint32_t insnbits, opcode_t *op) {
     unsigned imms = bitfield_u32(insnbits, 10, 6) & 0x3f;
     unsigned Rd = insnbits & 0x1F;
     
-    // ChArm-v2 only uses x registers 
     if (*op == OP_UBFM) {
         if (imms != 0b111111 && imms + 1 == immr) {
             *op = OP_LSL;
@@ -158,21 +155,13 @@ comb_logic_t fetch_instr(f_instr_impl_t *in, d_instr_impl_t *out) {
         out->op = itable[bitfield_u32(out->insnbits, 21, 11)];  
         fix_instr_aliases(out->insnbits, &out->op);
         out->print_op = out->op; 
-        // pass in &F_PC 
         predict_PC(current_PC, out->insnbits, out->op, &F_PC, &out->seq_succ_PC);
-        //in->pred_PC = F_PC;
         if (out->op == OP_ADRP){
             out->adrp_val = current_PC & ~0xfff;
         }
         else {
             out->adrp_val = 0;
         }
-        // in->status = STAT_AOK;
-        // } else {
-        //     out->status = STAT_INS;  
-        //     out->op = OP_ERROR;      
-        //     out->print_op = OP_ERROR;
-        // }
     }
     if (imem_err || out->op == OP_ERROR) {
         in->status = STAT_INS;
@@ -186,6 +175,5 @@ comb_logic_t fetch_instr(f_instr_impl_t *in, d_instr_impl_t *out) {
         in->status = STAT_AOK;
     }
     out->status = in->status;
-
     return;
 }

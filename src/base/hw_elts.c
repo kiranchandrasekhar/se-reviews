@@ -253,12 +253,6 @@ alu(uint64_t alu_vala, uint64_t alu_valb, uint8_t alu_valhw, alu_op_t ALUop, boo
         default:
             break;
     }
-    // valb_msb = (alu_valb >> 63) && 0x1;
-    // vala_msb = (alu_vala >> 63) && 0x1;
-    // res_msb = (res >> 63) && 0x1;
-    // if ((vala_msb == 0 && valb_msb == 1 && res_msb == 0 ) || (vala_msb == 1 && valb_msb == 0 && res_msb == 1)){
-    //      v = 1;
-    // }
     if (res == 0){
         z = 1;
     }if (res_msb == 1){

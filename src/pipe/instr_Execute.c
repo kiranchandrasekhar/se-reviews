@@ -35,17 +35,11 @@ extern comb_logic_t copy_w_ctl_sigs(w_ctl_sigs_t *, w_ctl_sigs_t *);
  */
 
 comb_logic_t execute_instr(x_instr_impl_t *in, m_instr_impl_t *out) {
-    
     uint64_t aluOperandB = in->X_sigs.valb_sel ? in->val_b : in->val_imm; 
     bool condVal;
-    // Copy control signals for the next pipeline stages.
     copy_m_ctl_sigs(&out->M_sigs, &in->M_sigs);
     copy_w_ctl_sigs(&out->W_sigs, &in->W_sigs);
-    // if (in->op == OP_MOVK){
-    //     in->val_a = in->val_a & ~0xffff;
-    // }
     alu(in->val_a, aluOperandB, in->val_hw, in->ALU_op, in->X_sigs.set_CC, in->cond, &out->val_ex, &condVal, &guest.proc->NZCV);
-    //preparing data to be sent to memory
     out->op = in->op;
     out->print_op = in->print_op;
     out->status = in->status;
@@ -53,6 +47,5 @@ comb_logic_t execute_instr(x_instr_impl_t *in, m_instr_impl_t *out) {
     out->dst = in->dst;
     out->cond_holds = condVal;
     out->val_b = in->val_b;
-    
     return;
 }
